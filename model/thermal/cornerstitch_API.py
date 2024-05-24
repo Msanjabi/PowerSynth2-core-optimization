@@ -40,7 +40,6 @@ class CornerStitch_Tmodel_API:
         """
         self.width = 0  # substrate width
         self.height = 0  # substrate height
-        self.iteration = 0
         self.layer_stack = None  # a layer stack object
         self.comp_dict = comp_dict
         self.model = 'analytical'  # or 'characterized'
@@ -127,7 +126,7 @@ class CornerStitch_Tmodel_API:
             if self.matlab_engine != None:
                 if self.ppw is None:
                     print("INFO: Running ParaPower: "+self.pp_json_path,flush=True)
-                self.ppw = pp.ParaPowerWrapper(solution,ambient_temp,h_val,self.matlab_engine,self.pp_json_path, self.iteration)
+                self.ppw = pp.ParaPowerWrapper(solution,ambient_temp,h_val,self.matlab_engine,self.pp_json_path)
             else:
                 print("Matlab engine not started")
             self.temp_res = self.ppw.parapower.run_parapower_thermal(matlab_engine=self.matlab_engine)
@@ -190,7 +189,7 @@ class CornerStitch_Tmodel_API:
             self.measure.append(ThermalMeasure(devices=devices, name=name))
             return self.measure
 
-    def eval_thermal_performance(self, module_data = None , solution = None, mode = 0, Iteration = None):
+    def eval_thermal_performance(self, module_data = None , solution = None, mode = 0):
         """_summary_
 
         Args:
@@ -198,7 +197,6 @@ class CornerStitch_Tmodel_API:
             solution (_type_, optional): layout PSSolution object. Defaults to None.
             mode (int, optional): select between maxtemp 0 , thermal resistance 1 Defaults to 0.
         """
-        self.iteration = Iteration
         if mode == 0:
             result = self.eval_max_temp(module_data,solution)
         if mode == 1:

@@ -122,7 +122,7 @@ def update_PS_solution_data(solutions=None,module_info=None, opt_problem=None, m
 
         if opt_problem != None:  # Evaluation mode
 
-            results = opt_problem.eval_3D_layout(module_data=module_info[i], solution=solutions[i],sol_len=len(solutions), Iteration = i)
+            results = opt_problem.eval_3D_layout(module_data=module_info[i], solution=solutions[i],sol_len=len(solutions))
             df = pd.DataFrame.from_dict(opt_problem.multiport_result)
             
         else:
