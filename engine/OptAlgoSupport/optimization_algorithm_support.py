@@ -93,7 +93,8 @@ class new_engine_opt:
             
             #self.e_api.generate_fasthenry_solutions_dir(id)
             #self.e_api.generate_fasthenry_inputs(id)
-    def eval_3D_layout(self,module_data = None, solution = None, init = False, sol_len =1):
+    def eval_3D_layout(self,module_data = None, solution = None, init = False, sol_len =1, Iteration = None):
+        iter = Iteration
         result = []
         measures=[None,None]
         for measure in self.measures:
@@ -155,7 +156,7 @@ class new_engine_opt:
                 t_solution=self.populate_thermal_info_to_sol_feat(t_sol2) # populating heat generation and heat transfer coefficeint
                 #print(self.t_api.matlab_engine)
                 #measure.mode = 1 #Need to input from macro
-                max_t = self.t_api.eval_thermal_performance(module_data=module_data,solution=t_solution, mode = 0) # extract max temp
+                max_t = self.t_api.eval_thermal_performance(module_data=module_data,solution=t_solution, mode = 0, Iteration = iter) # extract max temp
                 result.append(max_t)
         return result
     
@@ -233,7 +234,7 @@ class new_engine_opt:
         
         for i in range(len(solutions)):
             start2=time.time()
-            results = self.eval_3D_layout(module_data=module_info[i], solution=solutions[i])
+            results = self.eval_3D_layout(module_data=module_info[i], solution=solutions[i], Iteration=self.count)
             end2=time.time()
             self.eval_time+=(end2-start2)
             solutions[i].parameters = dict(list(zip(self.measure_names, results)))  # A dictionary formed by result and measurement name
@@ -281,7 +282,7 @@ class new_engine_opt:
   
         for i in range(len(solutions)):
             start2=time.time()
-            results = self.eval_3D_layout(module_data=module_info[i], solution=solutions[i])
+            results = self.eval_3D_layout(module_data=module_info[i], solution=solutions[i], Iteration=self.count)
             end2=time.time()
             self.eval_time+=(end2-start2)
             solutions[i].parameters = dict(list(zip(self.measure_names, results)))  # A dictionary formed by result and measurement name

@@ -133,7 +133,7 @@ class ParaPowerInterface(object):
 
     """
     def __init__(self, external_conditions=ExternalConditions(), parameters=Params(), features=None
-                 ,pp_json_path=None,solution_name='PSData',matlab_engine=None):
+                 ,pp_json_path=None,solution_name='PSData',matlab_engine=None, Iteration = None):
         self.ExternalConditions = external_conditions
         self.Params = parameters
         self.Features = features
@@ -142,6 +142,7 @@ class ParaPowerInterface(object):
         self.matlab_engine = matlab_engine
         self.path = pp_json_path
         self.solution_name = solution_name
+        self.iter = Iteration
         self.save_parapower()
         
 
@@ -213,11 +214,16 @@ class ParaPowerInterface(object):
 
         :return: None
         """
-        sol_name = self.solution_name
+        suffix = self.iter
+        folder = self.solution_name + str(suffix)
+        newPath = os.path.join(self.path, folder) 
+        os.makedirs(newPath, exist_ok=True)
+        sol_name = self.solution_name + str(suffix) + '.json'
         # print(self.path)
-        fname = self.path +'/'+ sol_name +  '_JSON.json'
+        fname = os.path.join(newPath, sol_name)
         with open(fname, 'w') as outfile:
             json.dump(self.to_dict(), outfile)
+            outfile.close()
 
 
 class ParaPowerWrapper(object):
@@ -241,7 +247,8 @@ class ParaPowerWrapper(object):
 
     """
 
-    def __init__(self, solution,t_amb=None,h_val=None,matlab_engine=None,pp_json_path=None):
+    def __init__(self, solution,t_amb=None,h_val=None,matlab_engine=None,pp_json_path=None, Iteration = None):
+        self.iter = Iteration
         self.c2k = 273.5
         self.solution = solution
         self.ref_locs = np.array([0,0,0])
@@ -265,7 +272,7 @@ class ParaPowerWrapper(object):
 
         self.parapower = ParaPowerInterface(self.external_conditions.to_dict(),
                                             self.parameters.to_dict(),
-                                            self.features,pp_json_path=self.pp_json_path,matlab_engine=matlab_engine)
+                                            self.features,pp_json_path=self.pp_json_path,matlab_engine=matlab_engine, Iteration=self.iter)
         # self.output = PPEncoder().encode(self.parapower)
         # self.write_md_output()
     def get_features(self):
