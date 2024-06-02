@@ -309,6 +309,60 @@ class ScriptInputMethod():
         input()
         '''
         return
+        
+    def getDevicesPins(self):
+        ''' get the devices and divices pins name and their coordination from the layout geometry script
+        '''
+        
+        layout_info = self.layout_info
+        devicePins = {}
+        devices = {}
+        pin = []
+        index = []
+        for j in range(len(layout_info)):
+            if len(layout_info[j])>2:
+                for k in range(len(layout_info[j])):
+                    if layout_info[j][k][0] == 'D':
+                       devices[(layout_info[j][k+1])] = j
+                       break
+            elif len(layout_info[j]) == 2:
+                index.append(j)
+
+        for d in range(len(devices)):
+            start = list(devices.values())[d] + 1
+            if d<len(devices)-1:
+                end = list(devices.values())[d+1]
+            else:
+                end = index[1]
+                
+            pins = layout_info[start:end]
+
+            for p in pins:
+                pin.append(p[3])
+                
+            devicePins[list(devices.keys())[d]] = copy.deepcopy(pin)
+            pin.clear()
+
+        pinsLayer ={}
+        for d in list(devicePins.values()):
+            for pin in d:
+                for i in range(1,len(index)):
+                    if i < len(index)-1:
+                        for j in range(index[i], index[i+1]):
+                            if len(layout_info[j])>2:
+                                for k in range(len(layout_info[j])):
+                                    if pin == layout_info[j][k]:
+                                        pinsLayer[pin] = [j-index[i], i]
+                                        break
+                    else:
+                         for j in range(index[i], len(layout_info)):
+                            if len(layout_info[j])>2:
+                                for k in range(len(layout_info[j])):
+                                    if pin == layout_info[j][k]:
+                                        pinsLayer[pin] = [j-index[i], i]
+                                        break
+
+        return devicePins, devices, pinsLayer
     
 
 
